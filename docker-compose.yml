@@ -1,0 +1,135 @@
+# =============================================================================
+# Docker Compose for Buttercup CMS Backend
+# =============================================================================
+# This file sets up:
+# - MySQL 8.0 database
+# - Buttercup CMS Backend API
+# - Adminer (optional - database management UI)
+#
+# Usage:
+#   Start all services:     docker-compose up -d
+#   Start with build:       docker-compose up -d --build
+#   View logs:              docker-compose logs -f
+#   Stop all services:      docker-compose down
+#   Stop and remove data:   docker-compose down -v
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # MySQL Database
+  # ---------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: buttercup-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-SAdhi@#123}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-buttercup}
+      MYSQL_USER: ${MYSQL_USER:-buttercup_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-buttercup_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-SAdhi@#123}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - buttercup-network
+
+  # ---------------------------------------------------------------------------
+  # Buttercup CMS Backend API
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development  # Use 'production' for production deployment
+    container_name: buttercup-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Application settings
+      APP_ENV: dev
+      DEBUG: "true"
+      HOST: "0.0.0.0"
+      PORT: "8000"
+      
+      # Database - connect to mysql service
+      DATABASE_URL: mysql+pymysql://root:SAdhi%40%23123@mysql:3306/buttercup
+      DB_DDL_AUTO: update
+      
+      # CORS
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:8080,http://127.0.0.1:5500"
+      
+      # Logging
+      LOG_LEVEL: INFO
+      LOG_FORMAT: json
+      
+      # Uploads
+      UPLOAD_DIR: /app/uploads
+      MAX_UPLOAD_MB: "10"
+    volumes:
+      # Mount source code for hot reload in development
+      - .:/app:cached
+      # Persist uploads
+      - uploads_data:/app/uploads
+      # Persist logs
+      - logs_data:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - buttercup-network
+
+  # ---------------------------------------------------------------------------
+  # Adminer - Database Management UI (Optional)
+  # ---------------------------------------------------------------------------
+  adminer:
+    image: adminer:latest
+    container_name: buttercup-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+      ADMINER_DESIGN: nette
+    depends_on:
+      - mysql
+    networks:
+      - buttercup-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  buttercup-network:
+    driver: bridge
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  mysql_data:
+    driver: local
+  uploads_data:
+    driver: local
+  logs_data:
+    driver: local
