@@ -29,11 +29,18 @@ from app.db.models import cms, news, assets  # noqa: F401
 config = context.config
 
 # Override sqlalchemy.url with our settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# IMPORTANT:
+# Alembic's Config uses Python's configparser which treats '%' as interpolation.
+# DATABASE_URL often contains URL-encoded '%' sequences (e.g. %40, %2F), which
+# will crash Alembic with "invalid interpolation syntax". Escape '%' as '%%'.
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
 
 # Interpret the config file for Python logging
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    # When Alembic is invoked programmatically from the FastAPI app, the app has
+    # already configured logging (JSON + rotating file). Avoid clobbering it.
+    if config.attributes.get("configure_logger", True):
+        fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 # Add your model's MetaData object here for 'autogenerate' support
 target_metadata = Base.metadata

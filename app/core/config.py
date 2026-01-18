@@ -89,6 +89,12 @@ class Settings(BaseSettings):
     # =========================================================================
     API_V1_PREFIX: str = "/api/v1"
     REQUEST_TIMEOUT: int = 60
+
+    # =========================================================================
+    # Admin Authentication
+    # =========================================================================
+    ADMIN_USERNAME: str = "admin"
+    ADMIN_PASSWORD: str = "change_me"
     
     # =========================================================================
     # Pydantic Settings Configuration

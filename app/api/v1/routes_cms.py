@@ -15,6 +15,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.core.security import require_admin
 from app.services.cms_service import CMSService
 from app.utils.api_response import success_response
 from app.schemas.cms import (
@@ -72,7 +73,7 @@ def get_site_branding(service: CMSService = Depends(get_cms_service)):
     return success_response(data=SiteBrandingResponse.model_validate(data))
 
 
-@router.put("/site-branding", response_model=dict, summary="Update site branding")
+@router.put("/site-branding", response_model=dict, summary="Update site branding", dependencies=[Depends(require_admin)])
 def update_site_branding(
     data: SiteBrandingCreate,
     service: CMSService = Depends(get_cms_service)
@@ -96,7 +97,7 @@ def get_header_config(service: CMSService = Depends(get_cms_service)):
     return success_response(data=HeaderConfigResponse.model_validate(data))
 
 
-@router.put("/header", response_model=dict, summary="Update header config")
+@router.put("/header", response_model=dict, summary="Update header config", dependencies=[Depends(require_admin)])
 def update_header_config(
     data: HeaderConfigCreate,
     service: CMSService = Depends(get_cms_service)
@@ -120,7 +121,7 @@ def get_hero_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=HeroSectionResponse.model_validate(data))
 
 
-@router.put("/hero", response_model=dict, summary="Update hero section")
+@router.put("/hero", response_model=dict, summary="Update hero section", dependencies=[Depends(require_admin)])
 def update_hero_section(
     data: HeroSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -144,7 +145,7 @@ def get_about_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=AboutSectionResponse.model_validate(data))
 
 
-@router.put("/about", response_model=dict, summary="Update about section")
+@router.put("/about", response_model=dict, summary="Update about section", dependencies=[Depends(require_admin)])
 def update_about_section(
     data: AboutSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -168,7 +169,7 @@ def get_services_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=ServicesSectionResponse.model_validate(data))
 
 
-@router.put("/services", response_model=dict, summary="Update services section")
+@router.put("/services", response_model=dict, summary="Update services section", dependencies=[Depends(require_admin)])
 def update_services_section(
     data: ServicesSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -192,7 +193,7 @@ def get_stats_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=StatsSectionResponse.model_validate(data))
 
 
-@router.put("/stats", response_model=dict, summary="Update stats section")
+@router.put("/stats", response_model=dict, summary="Update stats section", dependencies=[Depends(require_admin)])
 def update_stats_section(
     data: StatsSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -216,7 +217,7 @@ def get_testimonials_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=TestimonialsSectionResponse.model_validate(data))
 
 
-@router.put("/testimonials", response_model=dict, summary="Update testimonials section")
+@router.put("/testimonials", response_model=dict, summary="Update testimonials section", dependencies=[Depends(require_admin)])
 def update_testimonials_section(
     data: TestimonialsSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -240,7 +241,7 @@ def get_gallery_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=GallerySectionResponse.model_validate(data))
 
 
-@router.put("/gallery", response_model=dict, summary="Update gallery section")
+@router.put("/gallery", response_model=dict, summary="Update gallery section", dependencies=[Depends(require_admin)])
 def update_gallery_section(
     data: GallerySectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -264,7 +265,7 @@ def get_footer_config(service: CMSService = Depends(get_cms_service)):
     return success_response(data=FooterConfigResponse.model_validate(data))
 
 
-@router.put("/footer", response_model=dict, summary="Update footer config")
+@router.put("/footer", response_model=dict, summary="Update footer config", dependencies=[Depends(require_admin)])
 def update_footer_config(
     data: FooterConfigCreate,
     service: CMSService = Depends(get_cms_service)
@@ -288,7 +289,7 @@ def get_seo_config(service: CMSService = Depends(get_cms_service)):
     return success_response(data=SEOConfigResponse.model_validate(data))
 
 
-@router.put("/seo", response_model=dict, summary="Update SEO config")
+@router.put("/seo", response_model=dict, summary="Update SEO config", dependencies=[Depends(require_admin)])
 def update_seo_config(
     data: SEOConfigCreate,
     service: CMSService = Depends(get_cms_service)
@@ -312,7 +313,7 @@ def get_offer_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=OfferSectionResponse.model_validate(data))
 
 
-@router.put("/offers", response_model=dict, summary="Update offers section")
+@router.put("/offers", response_model=dict, summary="Update offers section", dependencies=[Depends(require_admin)])
 def update_offer_section(
     data: OfferSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -336,7 +337,7 @@ def get_popular_dishes_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=PopularDishesSectionResponse.model_validate(data))
 
 
-@router.put("/popular-dishes", response_model=dict, summary="Update popular dishes section")
+@router.put("/popular-dishes", response_model=dict, summary="Update popular dishes section", dependencies=[Depends(require_admin)])
 def update_popular_dishes_section(
     data: PopularDishesSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -360,7 +361,7 @@ def get_cta_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=CTASectionResponse.model_validate(data))
 
 
-@router.put("/cta", response_model=dict, summary="Update CTA section")
+@router.put("/cta", response_model=dict, summary="Update CTA section", dependencies=[Depends(require_admin)])
 def update_cta_section(
     data: CTASectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -384,7 +385,7 @@ def get_food_menu_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=FoodMenuSectionResponse.model_validate(data))
 
 
-@router.put("/food-menu", response_model=dict, summary="Update food menu section")
+@router.put("/food-menu", response_model=dict, summary="Update food menu section", dependencies=[Depends(require_admin)])
 def update_food_menu_section(
     data: FoodMenuSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -408,7 +409,7 @@ def get_special_offer_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=SpecialOfferSectionResponse.model_validate(data))
 
 
-@router.put("/special-offer", response_model=dict, summary="Update special offer section")
+@router.put("/special-offer", response_model=dict, summary="Update special offer section", dependencies=[Depends(require_admin)])
 def update_special_offer_section(
     data: SpecialOfferSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -432,7 +433,7 @@ def get_chef_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=ChefSectionResponse.model_validate(data))
 
 
-@router.put("/chef", response_model=dict, summary="Update chef section")
+@router.put("/chef", response_model=dict, summary="Update chef section", dependencies=[Depends(require_admin)])
 def update_chef_section(
     data: ChefSectionCreate,
     service: CMSService = Depends(get_cms_service)
@@ -456,7 +457,7 @@ def get_client_logos_section(service: CMSService = Depends(get_cms_service)):
     return success_response(data=ClientLogosSectionResponse.model_validate(data))
 
 
-@router.put("/client-logos", response_model=dict, summary="Update client logos section")
+@router.put("/client-logos", response_model=dict, summary="Update client logos section", dependencies=[Depends(require_admin)])
 def update_client_logos_section(
     data: ClientLogosSectionCreate,
     service: CMSService = Depends(get_cms_service)

@@ -29,8 +29,8 @@ class News(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     
     # Basic info
-    title: Mapped[str] = mapped_column(String(500), nullable=False, index=True)
-    slug: Mapped[str] = mapped_column(String(500), unique=True, nullable=False, index=True)
+    title: Mapped[str] = mapped_column(String(500), nullable=False)
+    slug: Mapped[str] = mapped_column(String(191), unique=True, nullable=False, index=True)
     
     # Content
     summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

@@ -24,6 +24,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.core.security import require_admin
 from app.services.news_service import NewsService
 from app.utils.api_response import success_response, error_response
 from app.schemas.news import (
@@ -108,7 +109,12 @@ def get_news_by_slug(
 # Admin Endpoints
 # =============================================================================
 
-@router.post("", response_model=dict, summary="Create news article")
+@router.post(
+    "",
+    response_model=dict,
+    summary="Create news article",
+    dependencies=[Depends(require_admin)],
+)
 def create_news(
     data: NewsCreate,
     service: NewsService = Depends(get_news_service)
@@ -121,7 +127,12 @@ def create_news(
     )
 
 
-@router.get("/admin/list", response_model=dict, summary="List all news (admin)")
+@router.get(
+    "/admin/list",
+    response_model=dict,
+    summary="List all news (admin)",
+    dependencies=[Depends(require_admin)],
+)
 def list_all_news(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(10, ge=1, le=100, description="Items per page"),
@@ -149,7 +160,12 @@ def list_all_news(
     return success_response(data=response_data.model_dump())
 
 
-@router.get("/admin/{news_id}", response_model=dict, summary="Get news by ID (admin)")
+@router.get(
+    "/admin/{news_id}",
+    response_model=dict,
+    summary="Get news by ID (admin)",
+    dependencies=[Depends(require_admin)],
+)
 def get_news_by_id(
     news_id: int,
     service: NewsService = Depends(get_news_service)
@@ -163,7 +179,12 @@ def get_news_by_id(
     return success_response(data=NewsResponse.model_validate(article).model_dump())
 
 
-@router.patch("/{news_id}", response_model=dict, summary="Update news article")
+@router.patch(
+    "/{news_id}",
+    response_model=dict,
+    summary="Update news article",
+    dependencies=[Depends(require_admin)],
+)
 def update_news(
     news_id: int,
     data: NewsUpdate,
@@ -181,7 +202,12 @@ def update_news(
     )
 
 
-@router.delete("/{news_id}", response_model=dict, summary="Delete news article")
+@router.delete(
+    "/{news_id}",
+    response_model=dict,
+    summary="Delete news article",
+    dependencies=[Depends(require_admin)],
+)
 def delete_news(
     news_id: int,
     service: NewsService = Depends(get_news_service)
@@ -195,7 +221,12 @@ def delete_news(
     return success_response(message="Article deleted successfully")
 
 
-@router.patch("/{news_id}/publish", response_model=dict, summary="Publish news article")
+@router.patch(
+    "/{news_id}/publish",
+    response_model=dict,
+    summary="Publish news article",
+    dependencies=[Depends(require_admin)],
+)
 def publish_news(
     news_id: int,
     data: NewsPublishAction = None,
@@ -214,7 +245,12 @@ def publish_news(
     )
 
 
-@router.patch("/{news_id}/unpublish", response_model=dict, summary="Unpublish news article")
+@router.patch(
+    "/{news_id}/unpublish",
+    response_model=dict,
+    summary="Unpublish news article",
+    dependencies=[Depends(require_admin)],
+)
 def unpublish_news(
     news_id: int,
     service: NewsService = Depends(get_news_service)

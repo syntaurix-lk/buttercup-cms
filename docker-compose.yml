@@ -80,6 +80,10 @@ services:
       # Uploads
       UPLOAD_DIR: /app/uploads
       MAX_UPLOAD_MB: "10"
+
+      # Admin Authentication
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change_me}
     volumes:
       # Mount source code for hot reload in development
       - .:/app:cached

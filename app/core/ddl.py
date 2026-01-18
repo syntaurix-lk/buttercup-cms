@@ -46,6 +46,7 @@ Alembic migrations provide:
 """
 
 import logging
+from pathlib import Path
 from sqlalchemy import text
 from alembic.config import Config
 from alembic import command
@@ -115,8 +116,16 @@ def _handle_update_mode():
     logger.info("DDL Auto: 'update' mode - Running Alembic migrations...")
     
     try:
-        # Create Alembic config
-        alembic_cfg = Config("alembic.ini")
+        # Create Alembic config (use absolute paths; don't depend on CWD)
+        project_root = Path(__file__).resolve().parents[2]
+        alembic_ini_path = project_root / "alembic.ini"
+        alembic_cfg = Config(str(alembic_ini_path))
+        alembic_cfg.set_main_option("script_location", str(project_root / "alembic"))
+        # Prevent Alembic from re-configuring logging via fileConfig() inside
+        # alembic/env.py. The application already configured structured logging.
+        alembic_cfg.attributes["configure_logger"] = False
+        # Escape '%' for Alembic's ConfigParser interpolation rules.
+        alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
         
         # Run migrations to head
         command.upgrade(alembic_cfg, "head")

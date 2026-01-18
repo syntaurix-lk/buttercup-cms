@@ -20,6 +20,7 @@ A complete Python FastAPI backend for managing the Buttercup restaurant home pag
 - [Database Setup](#database-setup)
 - [Running the Application](#running-the-application)
 - [API Documentation](#api-documentation)
+- [Admin Panel](#admin-panel)
 - [DDL Auto Behavior](#ddl-auto-behavior)
 - [Logging](#logging)
 - [File Uploads](#file-uploads)
@@ -130,6 +131,13 @@ All configuration is managed via environment variables in `.env` file:
 | `LOG_FILE_PATH` | `logs/app.log` | Log file location |
 | `LOG_FORMAT` | `json` | Log format (json/text) |
 
+### Admin Authentication
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ADMIN_USERNAME` | `admin` | Admin login username |
+| `ADMIN_PASSWORD` | `change_me` | Admin login password |
+
 ## Database Setup
 
 ### Manual Setup
@@ -197,6 +205,19 @@ Once the application is running:
 - **Swagger UI** (Interactive): http://localhost:8000/docs
 - **ReDoc** (Documentation): http://localhost:8000/redoc
 - **OpenAPI JSON**: http://localhost:8000/openapi.json
+
+## Admin Panel
+
+The admin panel is served as a static SPA:
+
+- **Admin UI**: http://localhost:8000/admin/
+
+Login uses HTTP Basic credentials from `.env`:
+
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
+
+Admin-only endpoints (CMS updates, news admin routes, asset management) require these credentials.
 
 ## DDL Auto Behavior
 
@@ -437,7 +458,17 @@ backend/
 | GET | `/api/v1/health/live` | Liveness probe |
 | GET | `/api/v1/health/ready` | Readiness probe |
 
+### Auth Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/login` | Admin login (validates credentials) |
+| GET | `/api/v1/auth/me` | Get current admin (Basic auth) |
+| POST | `/api/v1/auth/logout` | Logout (client clears credentials) |
+
 ### CMS Endpoints (Public GET, Admin PUT)
+
+Admin PUT endpoints require HTTP Basic auth.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -479,6 +510,8 @@ backend/
 
 ### News Endpoints (Full CRUD)
 
+Admin endpoints require HTTP Basic auth.
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/v1/news` | List published news (public) |
@@ -492,6 +525,8 @@ backend/
 | PATCH | `/api/v1/news/{id}/unpublish` | Unpublish article |
 
 ### Asset Endpoints
+
+All asset endpoints require HTTP Basic auth.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|

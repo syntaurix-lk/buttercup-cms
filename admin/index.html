@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Buttercup CMS Admin</title>
+  <script>
+    if (window.location.pathname.endsWith('/admin')) {
+      window.location.replace(window.location.pathname + '/');
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="bg-orb orb-c"></div>
+
+  <div class="login" id="loginView">
+    <div class="login-card">
+      <div class="login-brand">
+        <span class="badge">Buttercup</span>
+        <h1>CMS Admin</h1>
+        <p>Sign in to manage site content, news, and assets.</p>
+      </div>
+      <form id="loginForm" class="login-form">
+        <label>
+          Username
+          <input type="text" id="loginUsername" placeholder="admin" required />
+        </label>
+        <label>
+          Password
+          <input type="password" id="loginPassword" placeholder="********" required />
+        </label>
+        <button type="submit" class="btn primary">Sign In</button>
+        <p class="hint" id="loginHint"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="app" id="appView" aria-hidden="true">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">B</div>
+        <div>
+          <div class="brand-title">Buttercup</div>
+          <div class="brand-sub">Admin Panel</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+        <button class="nav-btn" data-view="cms">CMS</button>
+        <button class="nav-btn" data-view="news">News</button>
+        <button class="nav-btn" data-view="assets">Assets</button>
+        <button class="nav-btn" data-view="settings">Settings</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user" id="currentUser">Signed out</div>
+        <button class="btn ghost" id="logoutBtn">Log out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h2 id="viewTitle">Dashboard</h2>
+          <div class="subtle" id="viewSubtitle">Overview of your CMS.</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn ghost" id="refreshBtn">Refresh</button>
+          <div class="pill" id="envPill">ENV</div>
+        </div>
+      </header>
+
+      <section class="view active" id="dashboardView">
+        <div class="grid cards">
+          <div class="card">
+            <div class="card-title">Health</div>
+            <div class="card-value" id="healthStatus">Loading...</div>
+            <div class="card-meta" id="healthMeta">Checking API health</div>
+          </div>
+          <div class="card">
+            <div class="card-title">News Articles</div>
+            <div class="card-value" id="newsCount">-</div>
+            <div class="card-meta">Total articles</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Assets</div>
+            <div class="card-value" id="assetCount">-</div>
+            <div class="card-meta">Uploaded files</div>
+          </div>
+          <div class="card">
+            <div class="card-title">CMS Sections</div>
+            <div class="card-value">17</div>
+            <div class="card-meta">Structured sections</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Recent Activity</h3>
+          </div>
+          <div class="panel-body">
+            <div class="timeline" id="activityFeed">
+              <div class="timeline-item">Ready when you are.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="cmsView">
+        <div class="cms-layout">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Sections</h3>
+            </div>
+            <div class="panel-body">
+              <div class="cms-list" id="cmsSectionList"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3 id="cmsSectionTitle">Select a section</h3>
+                <div class="subtle" id="cmsSectionHint">Fill in the form and save.</div>
+              </div>
+              <div class="panel-actions">
+                <button class="btn ghost" id="cmsLoadBtn">Load</button>
+                <button class="btn primary" id="cmsSaveBtn">Save</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div id="cmsForm" class="cms-form"></div>
+              <details class="advanced" id="cmsAdvanced">
+                <summary>Advanced: JSON</summary>
+                <textarea id="cmsEditor" class="code" spellcheck="false" placeholder="JSON preview (advanced)..."></textarea>
+              </details>
+              <div class="hint">Tip: Use Upload / Pick buttons for images.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="newsView">
+        <div class="news-layout">
+          <div class="panel wide">
+            <div class="panel-header">
+              <div>
+                <h3>News Articles</h3>
+                <div class="subtle">Create, edit, publish, and manage posts.</div>
+              </div>
+              <div class="panel-actions">
+                <button class="btn ghost" id="newsReloadBtn">Reload</button>
+                <button class="btn primary" id="newsNewBtn">New Article</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="filter-row">
+                <input type="text" id="newsCategoryFilter" placeholder="Filter by category" />
+                <select id="newsStatusFilter">
+                  <option value="">All status</option>
+                  <option value="true">Published</option>
+                  <option value="false">Draft</option>
+                </select>
+                <button class="btn ghost" id="newsApplyFilter">Apply</button>
+              </div>
+              <div class="table-wrap">
+                <table class="table" id="newsTable">
+                  <thead>
+                    <tr>
+                      <th>Title</th>
+                      <th>Category</th>
+                      <th>Status</th>
+                      <th>Published</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="pagination" id="newsPagination"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3 id="newsFormTitle">Create Article</h3>
+            </div>
+            <div class="panel-body">
+              <form id="newsForm" class="form-grid">
+                <input type="hidden" id="newsId" />
+                <label>
+                  Title
+                  <input type="text" id="newsTitle" required />
+                </label>
+                <label>
+                  Slug
+                  <input type="text" id="newsSlug" placeholder="leave blank to auto-generate" />
+                </label>
+                <label>
+                  Category
+                  <input type="text" id="newsCategory" />
+                </label>
+                <label>
+                  Author
+                  <input type="text" id="newsAuthor" />
+                </label>
+                <label>
+                  Cover Image Path
+                  <input type="text" id="newsCover" placeholder="/static/uploads/..." />
+                </label>
+                <label>
+                  Tags (comma separated)
+                  <input type="text" id="newsTags" />
+                </label>
+                <label class="full">
+                  Summary
+                  <textarea id="newsSummary"></textarea>
+                </label>
+                <label class="full">
+                  Content
+                  <textarea id="newsContent" rows="8"></textarea>
+                </label>
+                <label>
+                  Meta Title
+                  <input type="text" id="newsMetaTitle" />
+                </label>
+                <label>
+                  Meta Description
+                  <textarea id="newsMetaDescription" rows="3"></textarea>
+                </label>
+                <label class="inline">
+                  <input type="checkbox" id="newsPublished" />
+                  Publish now
+                </label>
+                <label>
+                  Published At (optional)
+                  <input type="datetime-local" id="newsPublishedAt" />
+                </label>
+                <div class="form-actions full">
+                  <button type="submit" class="btn primary" id="newsSaveBtn">Save</button>
+                  <button type="button" class="btn ghost" id="newsResetBtn">Reset</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="assetsView">
+        <div class="assets-layout">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Upload Asset</h3>
+            </div>
+            <div class="panel-body">
+              <form id="assetUploadForm" class="form-grid" enctype="multipart/form-data">
+                <label>
+                  File
+                  <input type="file" id="assetFile" required />
+                </label>
+                <label>
+                  Category
+                  <input type="text" id="assetCategory" />
+                </label>
+                <label>
+                  Alt Text
+                  <input type="text" id="assetAltText" />
+                </label>
+                <div class="form-actions full">
+                  <button type="submit" class="btn primary">Upload</button>
+                  <button type="button" class="btn ghost" id="assetReloadBtn">Reload</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="panel wide">
+            <div class="panel-header">
+              <div>
+                <h3>Assets Library</h3>
+                <div class="subtle">Use assets in CMS sections or news articles.</div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="asset-grid" id="assetGrid"></div>
+              <div class="pagination" id="assetPagination"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="settingsView">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Settings</h3>
+          </div>
+          <div class="panel-body">
+            <div class="settings-grid">
+              <div>
+                <div class="label">API Base</div>
+                <div class="value" id="apiBase">-</div>
+              </div>
+              <div>
+                <div class="label">Environment</div>
+                <div class="value" id="envValue">-</div>
+              </div>
+              <div>
+                <div class="label">Auth Type</div>
+                <div class="value">HTTP Basic</div>
+              </div>
+              <div>
+                <div class="label">CMS Endpoint</div>
+                <div class="value">/api/v1/cms/*</div>
+              </div>
+            </div>
+            <div class="hint">Update admin credentials in the .env file on the backend.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal" id="assetPicker" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Select an asset</h3>
+        <button class="btn ghost" id="assetPickerClose">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="filter-row">
+          <input type="text" id="assetPickerSearch" placeholder="Search by filename" />
+          <button class="btn ghost" id="assetPickerReload">Reload</button>
+        </div>
+        <div class="asset-grid" id="assetPickerGrid"></div>
+        <div class="pagination" id="assetPickerPagination"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

@@ -44,7 +44,8 @@ class NewsService:
         
         If slug already exists, appends a number suffix.
         """
-        base_slug = slugify(title)
+        max_length = 191
+        base_slug = slugify(title)[:max_length]
         slug = base_slug
         counter = 1
         
@@ -56,7 +57,9 @@ class NewsService:
             if not query.first():
                 return slug
             
-            slug = f"{base_slug}-{counter}"
+            suffix = f"-{counter}"
+            trimmed = base_slug[: max_length - len(suffix)]
+            slug = f"{trimmed}{suffix}"
             counter += 1
     
     # =========================================================================

@@ -17,6 +17,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, 
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.core.security import require_admin
 from app.services.assets_service import AssetsService
 from app.utils.api_response import success_response
 
@@ -28,7 +29,12 @@ def get_assets_service(db: Session = Depends(get_db)) -> AssetsService:
     return AssetsService(db)
 
 
-@router.post("/upload", response_model=dict, summary="Upload file")
+@router.post(
+    "/upload",
+    response_model=dict,
+    summary="Upload file",
+    dependencies=[Depends(require_admin)],
+)
 async def upload_file(
     file: UploadFile = File(..., description="File to upload"),
     category: Optional[str] = Form(None, description="Category for organization"),
@@ -51,7 +57,12 @@ async def upload_file(
     )
 
 
-@router.get("", response_model=dict, summary="List assets")
+@router.get(
+    "",
+    response_model=dict,
+    summary="List assets",
+    dependencies=[Depends(require_admin)],
+)
 def list_assets(
     category: Optional[str] = Query(None, description="Filter by category"),
     is_active: Optional[bool] = Query(True, description="Filter by active status"),
@@ -72,14 +83,24 @@ def list_assets(
     )
 
 
-@router.get("/categories", response_model=dict, summary="List asset categories")
+@router.get(
+    "/categories",
+    response_model=dict,
+    summary="List asset categories",
+    dependencies=[Depends(require_admin)],
+)
 def list_categories(service: AssetsService = Depends(get_assets_service)):
     """Get list of all asset categories."""
     categories = service.get_categories()
     return success_response(data=categories)
 
 
-@router.get("/{asset_id}", response_model=dict, summary="Get asset details")
+@router.get(
+    "/{asset_id}",
+    response_model=dict,
+    summary="Get asset details",
+    dependencies=[Depends(require_admin)],
+)
 def get_asset(
     asset_id: int,
     service: AssetsService = Depends(get_assets_service)
@@ -93,7 +114,12 @@ def get_asset(
     return success_response(data=service.to_response_dict(asset))
 
 
-@router.patch("/{asset_id}", response_model=dict, summary="Update asset metadata")
+@router.patch(
+    "/{asset_id}",
+    response_model=dict,
+    summary="Update asset metadata",
+    dependencies=[Depends(require_admin)],
+)
 def update_asset(
     asset_id: int,
     category: Optional[str] = Form(None),
@@ -121,7 +147,12 @@ def update_asset(
     )
 
 
-@router.delete("/{asset_id}", response_model=dict, summary="Delete asset by ID")
+@router.delete(
+    "/{asset_id}",
+    response_model=dict,
+    summary="Delete asset by ID",
+    dependencies=[Depends(require_admin)],
+)
 def delete_asset(
     asset_id: int,
     delete_file: bool = Query(True, description="Also delete physical file"),
@@ -136,7 +167,12 @@ def delete_asset(
     return success_response(message="Asset deleted successfully")
 
 
-@router.delete("/filename/{filename}", response_model=dict, summary="Delete asset by filename")
+@router.delete(
+    "/filename/{filename}",
+    response_model=dict,
+    summary="Delete asset by filename",
+    dependencies=[Depends(require_admin)],
+)
 def delete_asset_by_filename(
     filename: str,
     delete_file: bool = Query(True, description="Also delete physical file"),

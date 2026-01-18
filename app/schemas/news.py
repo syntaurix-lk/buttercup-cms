@@ -27,7 +27,7 @@ class NewsBase(BaseModel):
 
 class NewsCreate(NewsBase):
     """Schema for creating news articles."""
-    slug: Optional[str] = Field(default=None, max_length=500)
+    slug: Optional[str] = Field(default=None, max_length=191)
     is_published: bool = False
     published_at: Optional[datetime] = None
     
@@ -36,7 +36,7 @@ class NewsCreate(NewsBase):
     def generate_slug(cls, v, info):
         """Generate slug from title if not provided."""
         if v:
-            return slugify(v)
+            return slugify(v)[:191]
         # Will be generated in service if title available
         return v
 
@@ -44,7 +44,7 @@ class NewsCreate(NewsBase):
 class NewsUpdate(BaseModel):
     """Schema for updating news articles (partial update)."""
     title: Optional[str] = Field(default=None, min_length=1, max_length=500)
-    slug: Optional[str] = Field(default=None, max_length=500)
+    slug: Optional[str] = Field(default=None, max_length=191)
     summary: Optional[str] = None
     content: Optional[str] = None
     cover_image_path: Optional[str] = Field(default=None, max_length=500)
@@ -61,7 +61,7 @@ class NewsUpdate(BaseModel):
     def slugify_slug(cls, v):
         """Slugify the slug if provided."""
         if v:
-            return slugify(v)
+            return slugify(v)[:191]
         return v
 
 
