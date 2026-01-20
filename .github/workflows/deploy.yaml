@@ -1,9 +1,7 @@
 name: Deploy Buttercup CMS (Compose Build on VPS)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
