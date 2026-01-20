@@ -49,7 +49,7 @@ jobs:
 
           docker run -d \
             --name buttercup-backend \
-            -p 80:8000 \
+            -p 8081:8000 \
             --restart always \
             -e ENV=production \
             buttercup-cms:latest
