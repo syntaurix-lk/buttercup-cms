@@ -52,5 +52,5 @@ jobs:
             -p 80:8000 \
             --restart always \
             -e ENV=production \
-            ${{ secrets.IMAGE_NAME }}:latest
+            buttercup-cms:latest
         EOF
