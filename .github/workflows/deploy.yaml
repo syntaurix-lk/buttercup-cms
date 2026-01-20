@@ -27,7 +27,7 @@ jobs:
           cd /opt/buttercup
     
           if [ ! -d ".git" ]; then
-            git clone git@github.com:suntaurix-lk/buttercup-cms.git .
+            git clone git@github.com:syntaurix-lk/buttercup-cms.git .
           else
             git pull origin main
           fi
