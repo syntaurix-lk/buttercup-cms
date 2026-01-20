@@ -29,8 +29,8 @@ jobs:
         target: production
         push: true
         tags: |
-          ${{ secrets.IMAGE_NAME }}:latest
-          ${{ secrets.IMAGE_NAME }}:${{ github.sha }}
+          buttercup-cms:latest
+          buttercup-cms:${{ github.sha }}
 
     - name: Setup SSH
       run: |
@@ -42,7 +42,7 @@ jobs:
     - name: Deploy on VPS
       run: |
         ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-          docker pull ${{ secrets.IMAGE_NAME }}:latest
+          docker pull buttercup-cms:latest
 
           docker stop buttercup-backend || true
           docker rm buttercup-backend || true
