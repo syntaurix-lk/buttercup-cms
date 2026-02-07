@@ -12,7 +12,7 @@ services:
 
     # Expose API
     ports:
-      - "8000:8000"
+      - "30001:30001"
 
     # Persist uploads + logs across deploys
     volumes:
@@ -22,4 +22,4 @@ services:
     # Run DB migrations, then start the API
     command: >
       sh -c "alembic upgrade head &&
-             uvicorn main:app --host 0.0.0.0 --port 8000"
+             uvicorn main:app --host 0.0.0.0 --port 30001"
