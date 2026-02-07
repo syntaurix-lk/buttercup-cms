@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
@@ -20,16 +19,20 @@ jobs:
       run: |
         ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
           set -e
-    
-          mkdir -p /opt/buttercup
-          cd /opt/buttercup
-    
-          if [ ! -d ".git" ]; then
-            git clone git@github.com:syntaurix-lk/buttercup-cms.git .
-          else
+
+          APP_DIR=/opt/buttercup
+          mkdir -p "$APP_DIR"
+          cd "$APP_DIR"
+
+          if [ -d ".git" ]; then
+            echo "Existing deployment detected → stopping containers (old compose)"
+            docker compose down --remove-orphans
             git pull origin main
+          else
+            echo "First-time deployment → cloning repository"
+            git clone git@github.com:syntaurix-lk/buttercup-cms.git .
           fi
-    
-          docker compose down
+
+          echo "Starting containers with new compose"
           docker compose up -d --build
         EOF
