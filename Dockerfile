@@ -75,14 +75,14 @@ RUN mkdir -p uploads logs && \
 USER appuser
 
 # Expose application port
-EXPOSE 8000
+EXPOSE 30001
 
 # Health check endpoint
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/api/v1/health/live || exit 1
 
 # Default startup command (overridden by docker-compose if needed)
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "30001"]
 
 # -----------------------------------------------------------------------------
 # Stage 3: Development Stage (optional)
@@ -97,4 +97,4 @@ RUN pip install pytest pytest-asyncio httpx black isort flake8
 USER appuser
 
 # Development command with hot reload
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "30001", "--reload"]
