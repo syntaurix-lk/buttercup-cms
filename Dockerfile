@@ -79,7 +79,7 @@ EXPOSE 30001
 
 # Health check endpoint
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/api/v1/health/live || exit 1
+    CMD curl -f http://localhost:30001/api/v1/health/live || exit 1
 
 # Default startup command (overridden by docker-compose if needed)
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "30001"]
